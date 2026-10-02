@@ -9,10 +9,10 @@ const app = express();
 
 mongoose.connect('mongodb://localhost:27017/mestodb')
   .then(() => {
-    console.log('Подключено к БД');
+    console.info('Подключено к БД');
   })
   .catch(() => {
-    console.log('Ошибка подключения к БД');
+    console.info('Ошибка подключения к БД');
   });
 
 app.use(express.json());
@@ -28,5 +28,5 @@ app.use('/users', userRoutes);
 app.use('/cards', cardRoutes);
 
 app.listen(PORT, () => {
-  console.log(`Сервер запущен на порту ${PORT}`);
+  console.info(`Сервер запущен на порту ${PORT}`);
 });
