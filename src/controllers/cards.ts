@@ -4,7 +4,7 @@ import { ERROR_CODES, handleError } from '../utils/errors';
 
 export const getCards = (req: Request, res: Response) => {
   Card.find({})
-    .then((cards) => res.send({ data: cards }))
+    .then((cards) => res.send(cards))
     .catch((err) => handleError(err, res));
 };
 
@@ -12,7 +12,7 @@ export const createCard = (req: Request, res: Response) => {
   const { name, link } = req.body;
 
   Card.create({ name, link, owner: req.user?._id })
-    .then((card) => res.status(201).send({ data: card }))
+    .then((card) => res.status(201).send(card))
     .catch((err) => handleError(err, res));
 };
 
@@ -25,7 +25,7 @@ export const deleteCardById = (req: Request, res: Response) => {
         return res.status(ERROR_CODES.NOT_FOUND).send({ message: 'Карточка не найдена' });
       }
 
-      return res.send({ data: card });
+      return res.send(card);
     })
     .catch((err) => handleError(err, res));
 };
@@ -37,7 +37,7 @@ export const likeCard = (req: Request, res: Response) => {
         return res.status(ERROR_CODES.NOT_FOUND).send({ message: 'Карточка не найдена' });
       }
 
-      return res.send({ data: card });
+      return res.send(card);
     })
     .catch((err) => handleError(err, res));
 };
@@ -49,7 +49,7 @@ export const dislikeCard = (req: Request, res: Response) => {
         return res.status(ERROR_CODES.NOT_FOUND).send({ message: 'Карточка не найдена' });
       }
 
-      return res.send({ data: card });
+      return res.send(card);
     })
     .catch((err) => handleError(err, res));
 };

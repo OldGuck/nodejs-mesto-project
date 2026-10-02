@@ -1,5 +1,5 @@
 {
-  "name": "starterkits",
+  "name": "Mesto",
   "version": "1.0.0",
   "description": "Бэкенд Mesto. Каркас API Mesto",
   "main": "dist/app.js",

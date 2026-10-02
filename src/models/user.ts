@@ -6,23 +6,28 @@ interface IUser {
   avatar: string;
 }
 
-const userSchema = new Schema<IUser>({
-  name: {
-    type: String,
-    required: true,
-    minlength: 2,
-    maxlength: 30,
+const userSchema = new Schema<IUser>(
+  {
+    name: {
+      type: String,
+      required: true,
+      minlength: 2,
+      maxlength: 30,
+    },
+    about: {
+      type: String,
+      required: true,
+      minlength: 2,
+      maxlength: 30,
+    },
+    avatar: {
+      type: String,
+      required: true,
+    },
   },
-  about: {
-    type: String,
-    required: true,
-    minlength: 2,
-    maxlength: 200,
+  {
+    versionKey: false,
   },
-  avatar: {
-    type: String,
-    required: true,
-  },
-});
+);
 
 export default mongoose.model<IUser>('user', userSchema);
