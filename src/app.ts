@@ -1,6 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express';
 import mongoose from 'mongoose';
 import userRoutes from './routes/users';
+import cardRoutes from './routes/cards';
 
 const { PORT = 3000 } = process.env;
 
@@ -23,8 +24,8 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 
   next();
 });
-
 app.use('/users', userRoutes);
+app.use('/cards', cardRoutes);
 
 app.listen(PORT, () => {
   console.log(`Сервер запущен на порту ${PORT}`);

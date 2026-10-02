@@ -3,7 +3,7 @@ import mongoose, { Schema } from 'mongoose';
 interface ICard {
   name: string;
   link: string;
-  owner: Schema.Types.ObjectId;
+  owner: Schema.Types.ObjectId | string;
   likes: Schema.Types.ObjectId[];
   createdAt: Date;
 }
