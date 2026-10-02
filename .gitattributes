@@ -1,0 +1,13 @@
+# Автоматически определять текстовые файлы и нормализовать их
+* text=auto eol=lf
+
+# Какие файлы всегда должны иметь LF
+*.ts   text eol=lf
+*.js   text eol=lf
+*.json text eol=lf
+*.md   text eol=lf
+
+# Бинарные файлы не трогать
+*.png  binary
+*.jpg  binary
+*.ico  binary
