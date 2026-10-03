@@ -2,6 +2,7 @@ import express, { Request, Response, NextFunction } from 'express';
 import mongoose from 'mongoose';
 import userRoutes from './routes/users';
 import cardRoutes from './routes/cards';
+import { ERROR_CODES } from './utils/errors';
 
 const { PORT = 3000 } = process.env;
 
@@ -26,6 +27,10 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 });
 app.use('/users', userRoutes);
 app.use('/cards', cardRoutes);
+
+app.use((req: Request, res: Response) => {
+  res.status(ERROR_CODES.NOT_FOUND).send({ message: 'Запрашиваемый ресурс не найден' });
+});
 
 app.listen(PORT, () => {
   console.info(`Сервер запущен на порту ${PORT}`);

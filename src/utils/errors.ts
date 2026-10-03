@@ -11,5 +11,5 @@ export const handleError = (err: any, res: Response) => {
     return res.status(ERROR_CODES.BAD_REQUEST).send({ message: err.message });
   }
 
-  return res.status(ERROR_CODES.INTERNAL_SERVER_ERROR).send({ message: err.message });
+  return res.status(ERROR_CODES.INTERNAL_SERVER_ERROR).send({ message: 'На сервере произошла ошибка' });
 };
