@@ -1,7 +1,24 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 import User from '../models/user';
 import { ERROR_CODES, handleError } from '../utils/errors';
+
+export const login = (req: Request, res: Response) => {
+  const { email, password } = req.body;
+
+  return User.findUserByCredentials(email, password)
+  .then((user) => {
+    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET || 'fallback-secret', { expiresIn: '7d' });
+
+    return res
+    .cookie('jwt', token, {
+      httpOnly: true,
+      maxAge: 3600000 * 24 * 7
+    }).send({ message: 'Авторизация прошла успешно' });
+  })
+  .catch(() => res.status(ERROR_CODES.UNAUTHORIZED).send({ message: 'Неправильные почта или пароль' }));
+};
 
 export const getUsers = (req: Request, res: Response) => {
   User.find({})
