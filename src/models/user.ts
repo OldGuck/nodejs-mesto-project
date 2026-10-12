@@ -1,7 +1,6 @@
 import mongoose, { Model, Schema, Document } from 'mongoose';
 import validator from 'validator';
 import bcrypt from 'bcryptjs';
-import { match } from 'assert';
 
 interface IUser {
   name: string;
@@ -34,7 +33,7 @@ const userSchema = new Schema<IUser, UserModel>(
     },
     avatar: {
       type: String,
-      match: /^https?:\/\/.+/,
+      match: /^https?:\/\/(www\.)?[\w-]+(\.[\w-]+)+([\w\-._~:/?#[\]@!$&'()*+,;=]*)?$/,
       default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
     },
     email: {
@@ -49,6 +48,7 @@ const userSchema = new Schema<IUser, UserModel>(
     password: {
       type: String,
       required: true,
+      select: false,
     },
   },
   {
@@ -61,7 +61,7 @@ userSchema.statics.findUserByCredentials = function findUserByCredentials(
   email: string,
   password: string,
 ) {
-  return this.findOne({ email })
+  return this.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
         return Promise.reject(new Error('Пользователя не существует'));

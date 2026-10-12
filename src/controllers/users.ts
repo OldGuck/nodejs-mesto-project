@@ -1,10 +1,13 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from '../models/user';
-import { ERROR_CODES, handleError } from '../utils/errors';
+import {
+  NotFoundError,
+  UnauthorizedError,
+} from '../errors/index';
 
-export const login = (req: Request, res: Response) => {
+export const login = (req: Request, res: Response, next: NextFunction) => {
   const { email, password } = req.body;
 
   return User.findUserByCredentials(email, password)
@@ -17,30 +20,42 @@ export const login = (req: Request, res: Response) => {
       maxAge: 3600000 * 24 * 7
     }).send({ message: 'Авторизация прошла успешно' });
   })
-  .catch(() => res.status(ERROR_CODES.UNAUTHORIZED).send({ message: 'Неправильные почта или пароль' }));
+  .catch(() => next(new UnauthorizedError('Неправильные почта или пароль')));
 };
 
-export const getUsers = (req: Request, res: Response) => {
+export const getUsers = (req: Request, res: Response, next: NextFunction) => {
   User.find({})
     .then((users) => res.send(users))
-    .catch((err) => handleError(err, res));
+    .catch(next);
 };
 
-export const getUserById = (req: Request, res: Response) => {
+export const getCurrentUser = (req: Request, res: Response, next: NextFunction) => {
+  User.findById(req.user?._id)
+    .then((user) => {
+      if (!user) {
+        throw new NotFoundError('Пользователь не найден');
+      }
+
+      return res.send(user);
+    })
+    .catch(next);
+};
+
+export const getUserById = (req: Request, res: Response, next: NextFunction) => {
   const id = req.params.userId;
 
   User.findById(id)
     .then((user) => {
       if (!user) {
-        return res.status(ERROR_CODES.NOT_FOUND).send({ message: 'Пользователь не найден' });
+        throw new NotFoundError('Пользователь не найден');
       }
 
       return res.send(user);
     })
-    .catch((err) => handleError(err, res));
+    .catch(next);
 };
 
-export const createUser = (req: Request, res: Response) => {
+export const createUser = (req: Request, res: Response, next: NextFunction) => {
   const { name, about, avatar, email, password } = req.body;
 
   bcrypt.hash(password, 10)
@@ -54,33 +69,33 @@ export const createUser = (req: Request, res: Response) => {
       })
     })
     .then((user) => res.status(201).send(user))
-    .catch((err) => handleError(err, res));
+    .catch(next);
 };
 
-export const updateProfile = (req: Request, res: Response) => {
+export const updateProfile = (req: Request, res: Response, next: NextFunction) => {
   const { name, about } = req.body;
 
   User.findByIdAndUpdate(req.user?._id, { name, about }, { new: true, runValidators: true })
     .then((user) => {
       if (!user) {
-        return res.status(ERROR_CODES.NOT_FOUND).send({ message: 'Пользователь не найден' });
+        throw new NotFoundError('Пользователь не найден');
       }
 
       return res.send(user);
     })
-    .catch((err) => handleError(err, res));
+    .catch(next);
 };
 
-export const updateAvatar = (req: Request, res: Response) => {
+export const updateAvatar = (req: Request, res: Response, next: NextFunction) => {
   const { avatar } = req.body;
 
   User.findByIdAndUpdate(req.user?._id, { avatar }, { new: true, runValidators: true })
     .then((user) => {
       if (!user) {
-        return res.status(ERROR_CODES.NOT_FOUND).send({ message: 'Пользователь не найден' });
+        throw new NotFoundError('Пользователь не найден');
       }
 
       return res.send(user);
     })
-    .catch((err) => handleError(err, res));
+    .catch(next);
 };

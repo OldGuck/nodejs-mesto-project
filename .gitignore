@@ -19,3 +19,6 @@ dist
 
 # File .env contains JWT SECRET
 .env
+
+# Log files with requests and errors
+*.log
