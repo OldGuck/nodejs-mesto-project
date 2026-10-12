@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { isCelebrateError } from 'celebrate';
 import { AppError } from '../errors/index';
 
 interface MongoError extends Error {
@@ -11,6 +12,14 @@ export default (
   res: Response,
   next: NextFunction,
 ) => {
+  if (isCelebrateError(err)) {
+    const errorBody = err.details.get('body')
+      || err.details.get('params')
+      || err.details.get('query');
+    const message = errorBody?.message || 'Некорректные данные';
+    return res.status(400).send({ message });
+  }
+
   if ('code' in err && err.code === 11000) {
     return res
       .status(409)
