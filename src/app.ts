@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-import express, { Request, Response } from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import mongoose from 'mongoose';
 import cookieParser from 'cookie-parser';
 import { celebrate, Joi } from 'celebrate';
@@ -12,6 +12,8 @@ import { login, createUser } from './controllers/users';
 import { requestLogger, errorLogger } from './middlewares/logger';
 import authorization from './middlewares/auth';
 import errorHandler from './middlewares/errorHandler';
+import { limiter } from './middlewares/rateLimiter';
+import { NotFoundError } from './errors/index';
 
 const { PORT = 3000 } = process.env;
 
@@ -29,6 +31,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use(requestLogger);
+app.use(limiter);
 
 app.post(
   '/signin',
@@ -60,8 +63,8 @@ app.use(authorization);
 app.use('/users', userRoutes);
 app.use('/cards', cardRoutes);
 
-app.use((req: Request, res: Response) => {
-  res.status(404).send({ message: 'Запрашиваемый ресурс не найден' });
+app.use((req: Request, res: Response, next: NextFunction) => {
+  next(new NotFoundError('Маршрут не найден'));
 });
 
 app.use(errorLogger);
